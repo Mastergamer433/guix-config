@@ -1,0 +1,3 @@
+;; .guile
+(set! %load-path (cons "./" %load-path))
+

@@ -1,0 +1,104 @@
+(define-module (config systems harry-potter)
+  #:use-module (gnu)
+  #:use-module (guix)
+  #:use-module (gnu system nss)
+  #:use-module (gnu services)
+  #:use-module (gnu services linux)
+  #:use-module (gnu services desktop)
+  #:use-module (gnu services xorg)
+  #:use-module (gnu services networking)
+  #:use-module (gnu services ssh)
+  #:use-module (gnu services shepherd)
+  #:use-module (gnu services nix)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages emacs)
+  #:use-module (gnu packages vim)
+  #:use-module (gnu packages xfce)
+  #:use-module (gnu packages terminals)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages wget)
+  #:use-module (gnu packages wm)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages package-management)
+  #:use-module (nongnu packages nvidia)
+  #:use-module (nonguix transformations)
+  #:use-module (nongnu system linux-initrd)
+  #:use-module (nongnu packages linux))
+
+(define %my-os
+  (operating-system
+    (host-name "harry-potter")
+    (timezone "Europe/Stockholm")
+    (locale "en_US.utf8")
+
+    (keyboard-layout (keyboard-layout "se"))
+
+    (kernel linux)
+    (initrd microcode-initrd)
+    (firmware (list linux-firmware))
+
+    (initrd-modules (append '("dm-crypt" "sha256" "btrfs")
+                            %base-initrd-modules))
+
+    (users (cons (user-account
+                   (name "mg433")
+                   (group "users")
+                   (home-directory "/home/mg433")
+                   (password (crypt "InitialPassword!" "$6$abc"))
+                   (supplementary-groups '("wheel" "netdev" "audio" "video")))
+                 %base-user-accounts))
+    (packages (append (list emacs
+                            vim
+                            git
+                            wget
+                            curl
+			    flatpak
+stumpwm
+                            ) %base-packages))
+
+    (services
+     (append %base-services ;include safe system essentials (networking, dbus, etc.)
+             (list
+	      (service nix-service-type
+		       (nix-configuration (extra-config '("extra-experimental-features = nix-command flakes"))))
+
+              ;; login manager
+              (service elogind-service-type)
+
+              ;; XFCE desktop
+              (service xfce-desktop-service-type)
+
+	      (service slim-service-type)
+	      )))
+
+    (name-service-switch %mdns-host-lookup-nss)
+
+    (bootloader (bootloader-configuration
+                  (bootloader grub-efi-bootloader)
+                  (targets '("/efi"))))
+    (mapped-devices (list (mapped-device
+                            (source (uuid
+                                     "0b88f4ac-70ed-442b-b43e-ffd703b9cf8d"))
+                            (target "root")
+                            (type luks-device-mapping))))
+    (file-systems (cons* (file-system
+                           (mount-point "/")
+                           (device "/dev/mapper/root")
+                           (type "btrfs")
+                           (options "subvol=guix/@,compress=zstd,ssd")
+                           (needed-for-boot? #t)
+                           (dependencies mapped-devices))
+                         (file-system
+                           (mount-point "/boot")
+                           (device (uuid
+                                    "69ddab2e-2c16-4b3a-8d6a-288babc26329"))
+                           (type "btrfs")
+                           (options "subvol=guix,ssd"))
+                         (file-system
+                           (mount-point "/efi")
+                           (device (uuid "ea94-c17f"
+                                         'fat))
+                           (type "vfat")) %base-file-systems))))
+
+((nonguix-transformation-nvidia)
+ %my-os)

@@ -1,0 +1,12 @@
+(define-public emacs-with-imagemagick
+  (package
+    (inherit emacs)
+    (name "emacs-with-imagemagick")
+    (inputs
+     (cons* imagemagick
+            (delete "imagemagick" (package-inputs emacs))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments emacs)
+       ((#:configure-flags flags)
+        (list* %standard-configure-flags
+               (cons "--with-imagemagick" flags)))))))

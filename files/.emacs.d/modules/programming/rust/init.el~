@@ -1,0 +1,9 @@
+(setq module-schema '(:enabled))
+
+(defmodule (:enabled)
+	   (when (plist-get cfg :enabled)
+
+	     (use-package rust-mode
+	       :ensure t
+	       :mode "\\.rs\\'"
+	       :hook ((rust-mode . eglot-ensure)))))

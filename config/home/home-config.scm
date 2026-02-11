@@ -1,0 +1,25 @@
+(define-module (config home home-config)
+  #:use-module (gnu)
+  #:use-module (gnu home)
+  #:use-module (gnu home services)
+  #:use-module (gnu home services sway)
+  #:use-module (gnu home services dotfiles)
+  #:use-module (gnu packages fonts)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu services)
+  #:use-module (guix packages)
+  #:use-module (guix git-download)
+  #:use-module (guix build-system emacs)
+  #:use-module (guix licenses)
+  #:use-module (config home services kmonad)
+  #:use-module (config packages emacs))
+
+(home-environment
+  (packages (list emacs-with-imagemagick font-fira-code imagemagick))
+  (services (list
+	      (service home-kmonad-service-type)
+	      (service home-sway-service-type)
+	      (service home-dotfiles-service-type
+		       (home-dotfiles-configuration
+			 (directories '("../../files")))))))
+
