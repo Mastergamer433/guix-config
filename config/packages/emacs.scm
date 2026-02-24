@@ -8,15 +8,16 @@
   (package
     (inherit emacs)
     ;; Add ImageMagick to inputs
-    (inputs (cons `("imagemagick" ,imagemagick) (package-inputs emacs)))
+    (inputs (cons `("imagemagick" ,imagemagick)
+                  (package-inputs emacs)))
     ;; Modify arguments to append "--with-imagemagick"
     (arguments
      (let ((args (package-arguments emacs)))
        (map (lambda (arg)
               (if (and (pair? arg)
-                       (eq? (car arg) '#:configure-flags))
+                       (eq? (car arg)
+                            '#:configure-flags))
                   ;; Append to existing configure flags
                   (cons '#:configure-flags
-                        (append (cdr arg) '("--with-imagemagick")))
-                  arg))
-            args)))))
+                        (append (cdr arg)
+                                '("--with-imagemagick"))) arg)) args)))))

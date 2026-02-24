@@ -5,6 +5,8 @@
 	(completion
 	 :enabled t
 	 :in-buffer t)
+        (terms
+	 :eat t)
         (programming
 	 :enabled t
 	 (rust

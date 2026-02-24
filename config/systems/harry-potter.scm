@@ -23,10 +23,20 @@
   #:use-module (nongnu packages nvidia)
   #:use-module (nonguix transformations)
   #:use-module (nongnu system linux-initrd)
-  #:use-module (nongnu packages linux))
+  #:use-module (nongnu packages linux)
+  #:use-module (config systems base-system))
+
+(define secrets-path
+  "../../secrets")
+
+;; (define build01-private-key
+;;   (sops-secret
+;;    (key '("build01"))
+;;    (file (local-file (file-append secrets-path "build-machines.yaml")))))
 
 (define %my-os
   (operating-system
+    (inherit %base-system)
     (host-name "harry-potter")
     (timezone "Europe/Stockholm")
     (locale "en_US.utf8")
@@ -47,29 +57,35 @@
                    (password (crypt "InitialPassword!" "$6$abc"))
                    (supplementary-groups '("wheel" "netdev" "audio" "video")))
                  %base-user-accounts))
-    (packages (append (list emacs
-                            vim
-                            git
-                            wget
-                            curl
-			    flatpak
-stumpwm
-                            ) %base-packages))
-
+    (packages (append (list flatpak
+			    stumpwm
+                            ) %my-base-packages))
     (services
-     (append %base-services ;include safe system essentials (networking, dbus, etc.)
-             (list
-	      (service nix-service-type
-		       (nix-configuration (extra-config '("extra-experimental-features = nix-command flakes"))))
-
-              ;; login manager
-              (service elogind-service-type)
-
-              ;; XFCE desktop
-              (service xfce-desktop-service-type)
-
-	      (service slim-service-type)
-	      )))
+     (append %base-services
+             (list (service nix-service-type
+                            (nix-configuration (extra-config '("extra-experimental-features = nix-command flakes"))))
+                   (service iwd-service-type)
+                   ;; (service sops-secrets-service-type
+                   ;; (sops-service-configuration
+                   ;; (secrets (list build01-private-key))))
+                   ;; (service guix-service-type
+                   ;; (guix-configuration
+                   ;; (build-machines
+                   ;; (list
+                   ;; (build-machine
+                   ;; (name "guix-build01.selud02.kimane.se")
+                   ;; (system "x86_64-linux")
+                   ;; (host-key "TODO")
+                   ;; (user "guix")
+                   ;; (speed 2)
+                   ;; (private-key))))))
+                   (service network-manager-service-type)
+                   (service elogind-service-type)
+                   (service xfce-desktop-service-type)
+                   (service xorg-server-service-type
+                            (xorg-configuration (keyboard-layout
+                                                 keyboard-layout)))
+                   (service slim-service-type))))
 
     (name-service-switch %mdns-host-lookup-nss)
 

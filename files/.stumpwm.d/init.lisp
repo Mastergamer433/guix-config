@@ -13,3 +13,9 @@
   (if (probe-file host-file)
       (load host-file)
       (message "No host config found for ~A" host)))
+
+(let ((quicklisp-init
+       (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname))))
+  (when (probe-file quicklisp-init)
+    (load quicklisp-init)))
+(ql:quickload :slynk)

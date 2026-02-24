@@ -1,0 +1,18 @@
+keys:
+  - &user_mg433 0xC4D27236999075E9D85C210C23ACAB3BB1F89857
+  - &host_harry-potter age1vrcfnx374y6jd07q5dauv7x65zf7lucplq2ha7jwns2qfc6cfg0qdprpk6
+
+creation_rules:
+  - path_regex: .*common\.yaml$
+    key_groups:
+      - pgp:
+        - *user_mg433
+      - age:
+        - *host_harry-potter
+
+  - path_regex: .*harry-potter\.yaml$
+    key_groups:
+      - pgp:
+        - *user_mg433
+      - age:
+        - *host_harry-potter
