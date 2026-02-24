@@ -22,17 +22,17 @@
 (defmodule (:enabled :in-buffer)
 	   (when (plist-get cfg :enabled)
 	     (message "Setting up completion system")
-(setq completion-cycle-threshold 3)
-(setq tab-always-indent 'complete)
-(setq completion-ignore-case t)
-(setq read-buffer-completion-ignore-case t)
-(setq read-file-name-completion-ignore-case t)
-(use-package orderless
-  :init
-  (setq completion-styles '(orderless basic)
-        completion-category-defaults nil
-        completion-category-overrides
-        '((file (styles partial-completion)))))
+	     (setq completion-cycle-threshold 3)
+	     (setq tab-always-indent 'complete)
+	     (setq completion-ignore-case t)
+	     (setq read-buffer-completion-ignore-case t)
+	     (setq read-file-name-completion-ignore-case t)
+	     (use-package orderless
+	       :init
+	       (setq completion-styles '(orderless basic)
+		     completion-category-defaults nil
+		     completion-category-overrides
+		     '((file (styles partial-completion)))))
 	     (use-package vertico
 	       :bind (:map minibuffer-local-map
 			   ("M-h" . backward-kill-word)
@@ -41,45 +41,45 @@
 	       (vertico-cycle t)
 	       :init
 	       (vertico-mode))
-(use-package marginalia
-  :init
-  (marginalia-mode))
-(use-package consult
-  :bind (("C-s" . consult-line)
-         ("C-x b" . consult-buffer)
-         ("C-x C-r" . consult-recent-file)
-         ("M-y" . consult-yank-pop)
-         ("C-c k" . consult-ripgrep)
-         ("C-c i" . consult-imenu)))
-(use-package embark
-  :bind (("C-." . embark-act)
-         ("C-;" . embark-dwim))
-  :init
-  (setq prefix-help-command #'embark-prefix-help-command))
-(use-package embark-consult
-  :after (embark consult))
-(setq completion-category-overrides
-      '((eglot (styles orderless))))
-(when (plist-get cfg :in-buffer)
-  (use-package corfu
-    :init
-    (global-corfu-mode)
-    :custom
-    (corfu-cycle t)
-    (corfu-auto t)
-    (corfu-auto-delay 0.2)
-    (corfu-auto-prefix 2)
-    (corfu-quit-at-boundary nil)
-    (corfu-quit-no-match 'separator)
-    (corfu-preview-current nil))
-  (use-package cape
-    :init
-    ;; Add useful completion-at-point functions
-    (add-to-list 'completion-at-point-functions #'cape-file)
-    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-    (add-to-list 'completion-at-point-functions #'cape-keyword))
-  (setq dabbrev-case-fold-search nil)
-  (setq dabbrev-upcase-means-case-search t)
-  )
-))
-		      
+	     (use-package marginalia
+	       :init
+	       (marginalia-mode))
+	     (use-package consult
+	       :bind (("C-s" . consult-line)
+		      ("C-x b" . consult-buffer)
+		      ("C-x C-r" . consult-recent-file)
+		      ("M-y" . consult-yank-pop)
+		      ("C-c k" . consult-ripgrep)
+		      ("C-c i" . consult-imenu)))
+	     (use-package embark
+	       :bind (("C-." . embark-act)
+		      ("C-;" . embark-dwim))
+	       :init
+	       (setq prefix-help-command #'embark-prefix-help-command))
+	     (use-package embark-consult
+	       :after (embark consult))
+	     (setq completion-category-overrides
+		   '((eglot (styles orderless))))
+	     (when (plist-get cfg :in-buffer)
+	       (use-package corfu
+		 :init
+		 (global-corfu-mode)
+		 :custom
+		 (corfu-cycle t)
+		 (corfu-auto t)
+		 (corfu-auto-delay 0.2)
+		 (corfu-auto-prefix 2)
+		 (corfu-quit-at-boundary nil)
+		 (corfu-quit-no-match 'separator)
+		 (corfu-preview-current nil))
+	       (use-package cape
+		 :init
+		 ;; Add useful completion-at-point functions
+		 (add-to-list 'completion-at-point-functions #'cape-file)
+		 (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+		 (add-to-list 'completion-at-point-functions #'cape-keyword))
+	       (setq dabbrev-case-fold-search nil)
+	       (setq dabbrev-upcase-means-case-search t)
+	       )
+	     ))
+
