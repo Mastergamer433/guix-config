@@ -57,9 +57,7 @@
                    (password (crypt "InitialPassword!" "$6$abc"))
                    (supplementary-groups '("wheel" "netdev" "audio" "video")))
                  %base-user-accounts))
-    (packages (append (list flatpak
-			    stumpwm
-                            ) %my-base-packages))
+    (packages (append (list flatpak stumpwm) %my-base-packages))
     (services
      (append %base-services
              (list (service nix-service-type
