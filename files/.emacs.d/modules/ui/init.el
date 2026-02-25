@@ -1,6 +1,6 @@
 (setq module-schema '(:enabled :font))
 
-(defmodule (:enabled :font)
+(defmodule (:enabled :window-management :font)
 	   (when (plist-get cfg :enabled)
 	     (message "Setting up basic UI customizations")
 	     (setq inhibit-startup-message t)
@@ -32,5 +32,14 @@
 	     (use-package emojify)
 	     (use-package timu-spacegrey-theme
 	       :config
-	       (load-theme 'timu-spacegrey t))))
-		      
+	       (load-theme 'timu-spacegrey t)))
+	   (when (plist-get cfg :window-management)
+	     (use-package buffer-move)
+             (winner-mode)
+	     (use-package ace-window
+	       :bind ("M-o" . ace-window)
+	       :custom
+	       (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+	     (use-package winum
+	       :config
+	       (winum-mode))))

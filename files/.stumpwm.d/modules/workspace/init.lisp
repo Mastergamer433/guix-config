@@ -7,4 +7,5 @@
       (message "Workspace module enabled: creating ~A workspaces" num)
       ;; Example: create workspaces
       (dotimes (i num)
+	(gnewbg i)
         (message "Created workspace ~A" (1+ i))))))

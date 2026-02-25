@@ -10,6 +10,7 @@
   #:use-module (gnu services ssh)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services nix)
+  #:use-module (gnu services guix)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages vim)
@@ -24,7 +25,8 @@
   #:use-module (nonguix transformations)
   #:use-module (nongnu system linux-initrd)
   #:use-module (nongnu packages linux)
-  #:use-module (config systems base-system))
+  #:use-module (config systems base-system)
+  #:use-module (config home harry-potter))
 
 (define secrets-path
   "../../secrets")
@@ -83,7 +85,10 @@
                    (service xorg-server-service-type
                             (xorg-configuration (keyboard-layout
                                                  keyboard-layout)))
-                   (service slim-service-type))))
+                   (service slim-service-type)
+
+                   (service guix-home-service-type
+                            `((mg433 unquote %harry-potter-home))))))
 
     (name-service-switch %mdns-host-lookup-nss)
 

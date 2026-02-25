@@ -1,4 +1,4 @@
-(define-module (config home home-config)
+(define-module (config home base-home)
   #:use-module (gnu)
   #:use-module (gnu home)
   #:use-module (gnu home services)
@@ -22,14 +22,14 @@
   #:use-module (guix licenses)
   #:use-module (guix gexp)
   #:use-module (config home services kmonad)
-  #:use-module (config packages emacs))
+  #:use-module (config home services emacs)
+  #:export (%base-home))
 
+(define %base-home
 (home-environment
   (packages (list pinentry-qt
                   alacritty
                   sbcl
-                  emacs-with-imagemagick
-                  font-fira-code
                   imagemagick
                   direnv
                   eza
@@ -38,6 +38,7 @@
    (list (service home-kmonad-service-type)
          (service home-sway-service-type)
          (service home-dbus-service-type)
+	 (service home-emacs-service-type)
          (service home-bash-service-type
                   (home-bash-configuration
                    (aliases `(("ls" . "eza")))
@@ -49,5 +50,5 @@
                                                                    "/bin/pinentry-qt"))
                                                 (ssh-support? #t)))
          (service home-dotfiles-service-type
-                  (home-dotfiles-configuration (directories '("../../files")))))))
+                  (home-dotfiles-configuration (directories '("../../files"))))))))
 

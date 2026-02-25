@@ -1,5 +1,6 @@
 (in-package :stumpwm)
 
+(defvar *config-dir* (merge-pathnames ".stumpwm.d/" (user-homedir-pathname)))
 ;; Load base system
 (load (merge-pathnames "base.lisp" *config-directory*))
 

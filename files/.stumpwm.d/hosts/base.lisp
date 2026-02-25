@@ -65,7 +65,8 @@ CFG format example:
           (load init-file)
 
           (when *module-schema*
-            (validate-config local-options *module-schema*))
+            (validate-config local-options *module-schema*)
+	    (setf (gethash (module-path-to-string path) *config-options*) local-options))
 
           (when *module-setup-fn*
             (funcall *module-setup-fn* local-options))))
@@ -78,6 +79,13 @@ CFG format example:
            (append path (list (symbol-name key)))
            subcfg-body))))))
 
+(defun get-module-config (path &optional key)
+  "Get the config plist for module at PATH (string like \"org/note-taking\").
+If KEY is provided, return (getf config key)."
+  (let ((cfg (gethash path *config-options*)))
+    (if key
+        (getf cfg key)
+        cfg)))
 ;;;; ------------------------------------------------------------------
 ;;;; defmodule macro
 
