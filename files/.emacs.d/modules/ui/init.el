@@ -1,5 +1,3 @@
-(setq module-schema '(:enabled :font))
-
 (defmodule (:enabled :font)
 	   (when (plist-get cfg :enabled)
 	     (message "Setting up basic UI customizations")
@@ -33,4 +31,4 @@
 	     (use-package timu-spacegrey-theme
 	       :config
 	       (load-theme 'timu-spacegrey t))))
-		      
+

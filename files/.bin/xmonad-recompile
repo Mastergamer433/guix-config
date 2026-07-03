@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+guix shell xmonad ghc ghc-xmonad-contrib gcc-toolchain -- xmonad --recompile

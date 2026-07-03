@@ -8,8 +8,12 @@
   #:use-module (gnu services xorg)
   #:use-module (gnu services networking)
   #:use-module (gnu services ssh)
+  #:use-module (gnu services lightdm)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services nix)
+  #:use-module (gnu services docker)
+  #:use-module (gnu services containers)
+  #:use-module (gnu services guix)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages vim)
@@ -24,7 +28,9 @@
   #:use-module (nonguix transformations)
   #:use-module (nongnu system linux-initrd)
   #:use-module (nongnu packages linux)
-  #:use-module (config systems base-system))
+  #:use-module (config systems base-system)
+  #:use-module (config packages nvidia)
+  #:use-module (config home home-config))
 
 (define secrets-path
   "../../secrets")
@@ -57,12 +63,21 @@
                    (password (crypt "InitialPassword!" "$6$abc"))
                    (supplementary-groups '("wheel" "netdev" "audio" "video")))
                  %base-user-accounts))
-    (packages (append (list flatpak stumpwm) %my-base-packages))
+    (packages (append (list flatpak
+			    ;nvidia-container-toolkit
+			    stumpwm
+			    xmonad
+			    hyprland) %my-base-packages))
     (services
      (append %base-services
              (list (service nix-service-type
                             (nix-configuration (extra-config '("extra-experimental-features = nix-command flakes"))))
                    (service iwd-service-type)
+		   ;(service docker-service-type
+		;	    (docker-configuration
+		;	      (config-file (local-file "files/daemon.json"))))
+		   (service docker-service-type)
+		   (service containerd-service-type)
                    ;; (service sops-secrets-service-type
                    ;; (sops-service-configuration
                    ;; (secrets (list build01-private-key))))
@@ -79,11 +94,24 @@
                    ;; (private-key))))))
                    (service network-manager-service-type)
                    (service elogind-service-type)
-                   (service xfce-desktop-service-type)
-                   (service xorg-server-service-type
-                            (xorg-configuration (keyboard-layout
-                                                 keyboard-layout)))
-                   (service slim-service-type))))
+		   ;(service seatd-service-type)
+;                   (service xorg-server-service-type
+;                            (xorg-configuration (keyboard-layout
+;                                                 keyboard-layout)))
+		   (simple-service 'oci-provisioning
+				   oci-service-type
+				   (oci-extension
+				    (containers
+				     (list
+				      (oci-container-configuration
+					(image "ollama/ollama")
+					(ports
+					 '(("11434" . "11434")))
+					(volumes
+					 '("ollama:/root/.ollama")))))))
+		   (service guix-home-service-type
+			    `(("mg433" ,my-home)))
+		   )))
 
     (name-service-switch %mdns-host-lookup-nss)
 

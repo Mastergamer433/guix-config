@@ -76,6 +76,8 @@ CFG is an alist at this level: ((ui :enabled t ...) ...)."
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
 
+(setq use-package-always-defer t)
+
 (setq backup-directory-alist `(("." . ,(expand-file-name "tmp/backups/" user-emacs-directory))))
 
 ;; auto-save-mode doesn't create the path automatically!

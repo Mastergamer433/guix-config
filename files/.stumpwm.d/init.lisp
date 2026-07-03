@@ -1,7 +1,11 @@
-(in-package :stumpwm)
+(In-package :stumpwm)
+
+(stumpwm:add-to-load-path "~/.guix-home/profile/share/common-lisp/sbcl/slynk")
+
+(defparameter *config-directory* (merge-pathnames ".stumpwm.d/" (user-homedir-pathname)))
 
 ;; Load base system
-(load (merge-pathnames "base.lisp" *config-directory*))
+(load (merge-pathnames "hosts/base.lisp" *config-directory*))
 
 ;; Host-specific config loading
 (let* ((host (machine-instance))
@@ -13,9 +17,4 @@
   (if (probe-file host-file)
       (load host-file)
       (message "No host config found for ~A" host)))
-
-(let ((quicklisp-init
-       (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname))))
-  (when (probe-file quicklisp-init)
-    (load quicklisp-init)))
-(ql:quickload :slynk)
+(require :slynk)

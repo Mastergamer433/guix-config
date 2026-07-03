@@ -1,0 +1,9 @@
+// VERY VERY TEMPORARY, files at the root of the config should be separated instead!!!
+{
+    "runtimes": {
+        "nvidia": {
+            "args": [],
+            "path": "/run/current-system/profile/bin/nvidia-container-runtime"
+        }
+    }
+}

@@ -1,0 +1,17 @@
+Config { font = "xft:JetBrains Mono:size=10:bold"
+       , bgColor = "#282c34"
+       , fgColor = "#bbc2cf"
+       , position = Top
+       , lowerOnStart = True
+       , commands =
+           [ Run Cpu ["-L","3","-H","50","--normal","green","--high","red","-p"] 10
+           , Run Memory ["-t","Mem: <usedratio>%"] 10
+           , Run Network "enp0s3" ["-t","Net: <rx>kB/s↓|<tx>kB/s↑"] 10
+           , Run Battery ["-t","Bat: <left>% <acstatus>","-L","10","-H","80","--low","red","--normal","green","--charge","yellow"] 50
+           , Run Date "%a %b %d %Y %H:%M:%S" "date" 10
+           , Run StdinReader
+           ]
+       , sepChar = "%"
+       , alignSep = "}{"
+       , template = "%StdinReader% }{ %cpu% | %memory% | %enp0s3% | %battery% | %date%"
+       }
