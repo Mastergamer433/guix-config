@@ -1,0 +1,55 @@
+(defwindow bar
+  :monitor 0
+  :windowtype "dock"
+  :exclusive true
+  :geometry
+    (geometry
+      :x "0%"
+      :y "0%"
+      :width "100%"
+      :height "36px"
+      :anchor "top center")
+
+  (bar-content))
+
+(defwidget bar-content []
+  (box
+    :class "bar"
+    :orientation "h"
+    :space-evenly false
+    
+
+    (label
+    :halign "start"
+    :hexpand true
+    :text "Hyprland")
+
+(centerbox
+  (box
+    :halign "end"
+    (label :text artist)
+    (label :text " "))
+
+  (label
+    :text "-"
+    :halign "center")
+
+  (box
+    :halign "start"
+    (label :text " ")
+    (label :text title)))
+
+  (label
+  :halign "end"
+  :hexpand true
+  :text clock)
+    ))
+    
+
+(defpoll clock :interval "1s"
+  `date +"%Y-%m-%dT%H:%M:%S%:z"`)
+(defpoll artist :interval "3s"
+  `playerctl metadata artist`)
+
+(defpoll title :interval "3s"
+  `playerctl metadata title`)

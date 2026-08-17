@@ -27,12 +27,14 @@
      (list
       #:import-path "kubevirt.io/kubevirt/cmd/virtctl"
       #:build-flags
-      #~(list
-         "-tags=selinux"
-         (string-append "-ldflags="
-                        "-X kubevirt.io/client-go/version.gitCommit=v" #$version " "
-                        "-X kubevirt.io/client-go/version.gitTreeState=clean "
-                        "-X kubevirt.io/client-go/version.gitVersion=v" #$version))
+      #~(list "-tags=selinux"
+              (string-append "-ldflags="
+               "-X kubevirt.io/client-go/version.gitCommit=v"
+               #$version
+               " "
+               "-X kubevirt.io/client-go/version.gitTreeState=clean "
+               "-X kubevirt.io/client-go/version.gitVersion=v"
+               #$version))
 
       #:phases
       #~(modify-phases %standard-phases
@@ -46,24 +48,26 @@
                     (lambda ()
                       (invoke bin "completion" "bash")))
                   (install-file "virtctl.bash"
-                                (string-append out "/share/bash-completion/completions/"))
+                                (string-append out
+                                 "/share/bash-completion/completions/"))
 
                   ;; Fish
                   (with-output-to-file "virtctl.fish"
                     (lambda ()
                       (invoke bin "completion" "fish")))
                   (install-file "virtctl.fish"
-                                (string-append out "/share/fish/vendor_completions.d/"))
+                                (string-append out
+                                 "/share/fish/vendor_completions.d/"))
 
                   ;; Zsh
                   (with-output-to-file "_virtctl"
                     (lambda ()
                       (invoke bin "completion" "zsh")))
                   (install-file "_virtctl"
-                                (string-append out "/share/zsh/site-functions/")))))))))
+                                (string-append out
+                                               "/share/zsh/site-functions/")))))))))
 
-    (native-inputs
-     (list))
+    (native-inputs (list))
 
     (home-page "https://kubevirt.io/")
     (synopsis "Client tool for KubeVirt advanced features (virtctl)")

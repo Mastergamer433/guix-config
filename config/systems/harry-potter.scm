@@ -29,6 +29,7 @@
   #:use-module (nongnu system linux-initrd)
   #:use-module (nongnu packages linux)
   #:use-module (config systems base-system)
+;  #:use-module (config systems containers)
   #:use-module (config packages nvidia)
   #:use-module (config home home-config))
 
@@ -64,20 +65,18 @@
                    (supplementary-groups '("wheel" "netdev" "audio" "video")))
                  %base-user-accounts))
     (packages (append (list flatpak
-			    ;nvidia-container-toolkit
-			    stumpwm
-			    xmonad
-			    hyprland) %my-base-packages))
+                            ;; nvidia-container-toolkit
+                            stumpwm xmonad hyprland) %my-base-packages))
     (services
      (append %base-services
              (list (service nix-service-type
                             (nix-configuration (extra-config '("extra-experimental-features = nix-command flakes"))))
                    (service iwd-service-type)
-		   ;(service docker-service-type
-		;	    (docker-configuration
-		;	      (config-file (local-file "files/daemon.json"))))
-		   (service docker-service-type)
-		   (service containerd-service-type)
+                   ;; (service docker-service-type
+                   ;; (docker-configuration
+                   ;; (config-file (local-file "files/daemon.json"))))
+                   (service docker-service-type)
+                   (service containerd-service-type)
                    ;; (service sops-secrets-service-type
                    ;; (sops-service-configuration
                    ;; (secrets (list build01-private-key))))
@@ -94,24 +93,20 @@
                    ;; (private-key))))))
                    (service network-manager-service-type)
                    (service elogind-service-type)
-		   ;(service seatd-service-type)
-;                   (service xorg-server-service-type
-;                            (xorg-configuration (keyboard-layout
-;                                                 keyboard-layout)))
-		   (simple-service 'oci-provisioning
-				   oci-service-type
-				   (oci-extension
-				    (containers
-				     (list
-				      (oci-container-configuration
-					(image "ollama/ollama")
-					(ports
-					 '(("11434" . "11434")))
-					(volumes
-					 '("ollama:/root/.ollama")))))))
-		   (service guix-home-service-type
-			    `(("mg433" ,my-home)))
-		   )))
+                   ;; (service seatd-service-type)
+                   ;; (service xorg-server-service-type
+                   ;; (xorg-configuration (keyboard-layout
+                   ;; keyboard-layout)))
+                   (simple-service 'oci-provisioning oci-service-type
+                                   (oci-extension (containers (list ;bitlbee-container
+								    (oci-container-configuration
+                                                                     (image
+                                                                      "ollama/ollama")
+                                                                     (ports '(("11434" . "11434")))
+                                                                     (volumes '
+                                                                              ("ollama:/root/.ollama")))))))
+                   (service guix-home-service-type
+                            `(("mg433" ,my-home))))))
 
     (name-service-switch %mdns-host-lookup-nss)
 

@@ -2,6 +2,9 @@
 (local monitors (require :config.monitors))
 (local input (require :config.input))
 (local decorations (require :config.decorations))
+;(hl.dsp.exec_once "eww daemon")
+;(hl.dsp.exec_once "eww open bar")
+;(hl.dsp.exec_once "~/.config/eww/scripts/clock.sh")
 
 (fn config []
   {
@@ -9,6 +12,7 @@
    :decorations decoration
    :animations animations
    :input input
+   :monitors monitors
   })
 
 (hl.config (config))
@@ -50,7 +54,6 @@
 (hl.bind "SUPER + Q" (hl.dsp.window.close))
 (hl.bind "SUPER + E" (hl.dsp.exec_cmd "emacsclient -t"))
 (hl.bind "SUPER + D" (hl.dsp.exec_cmd "rofi -show run"))
-
 (for [i 1 10]
   (local key (% i 10))
   (hl.bind (.. "SUPER + " key) (hl.dsp.focus { :workspace i }))

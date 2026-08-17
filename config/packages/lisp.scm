@@ -1,7 +1,8 @@
 (define-module (config packages lisp)
   #:use-module (guix packages)
   #:use-module (gnu packages lisp)
-  #:use-module ((guix licenses) #:prefix license:)
+  #:use-module ((guix licenses)
+                #:prefix license:)
   #:export (jpm-1.2.0))
 
 (define jpm-1.2.0

@@ -7,7 +7,8 @@
   #:use-module (config packages rust-sources)
   #:export (lookup-cargo-inputs))
 
-(define qqqq-separator 'begin-of-crates)
+(define qqqq-separator
+  'begin-of-crates)
 
 (define rust-adler2-2.0.1
   (crate-source "adler2" "2.0.1"
@@ -1604,17 +1605,23 @@
   (crate-source "smallvec" "1.15.1"
                 "00xxdxxpgyq5vjnpljvkmy99xij5rxgh913ii1v16kzynnivgcb7"))
 
-(define rust-smithay-0.7.0.ae14fa1 rust-smithay-0.7.0.ae14fa1)
+(define rust-smithay-0.7.0.ae14fa1
+  rust-smithay-0.7.0.ae14fa1)
 
-(define rust-smithay-drm-extras-0.1.0.ae14fa1 rust-smithay-0.7.0.ae14fa1)
+(define rust-smithay-drm-extras-0.1.0.ae14fa1
+  rust-smithay-0.7.0.ae14fa1)
 
-(define rust-smithay-smallvil-0.1.0.ae14fa1 rust-smithay-0.7.0.ae14fa1)
+(define rust-smithay-smallvil-0.1.0.ae14fa1
+  rust-smithay-0.7.0.ae14fa1)
 
-(define rust-smithay-test_clients-0.1.0.ae14fa1 rust-smithay-0.7.0.ae14fa1)
+(define rust-smithay-test_clients-0.1.0.ae14fa1
+  rust-smithay-0.7.0.ae14fa1)
 
-(define rust-smithay-wcs_anvil-0.0.1.ae14fa1 rust-smithay-0.7.0.ae14fa1)
+(define rust-smithay-wcs_anvil-0.0.1.ae14fa1
+  rust-smithay-0.7.0.ae14fa1)
 
-(define rust-smithay-anvil-0.0.1.ae14fa1 rust-smithay-0.7.0.ae14fa1)
+(define rust-smithay-anvil-0.0.1.ae14fa1
+  rust-smithay-0.7.0.ae14fa1)
 
 (define rust-smithay-client-toolkit-0.19.2
   (crate-source "smithay-client-toolkit" "0.19.2"
@@ -2260,7 +2267,8 @@
   (crate-source "zvariant_utils" "3.3.0"
                 "1sf5i71in36gc08jhak83pprnkam8gk936cqlq9hzx7q9sk26p7p"))
 
-(define ssss-separator 'end-of-crates)
+(define ssss-separator
+  'end-of-crates)
 
 (define-cargo-inputs lookup-cargo-inputs
                      (ewm-core =>

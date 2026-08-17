@@ -3,7 +3,7 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages imagemagick)
   #:use-module ((guix licenses)
-		#:prefix license:)
+                #:prefix license:)
   #:use-module (guix git-download)
   #:use-module (guix build-system cargo)
   #:use-module (guix gexp)
@@ -40,20 +40,20 @@
              (commit "43f6b5ec82b336aef1acf0f78a016ba909a62b4d")))
        (file-name (git-file-name name version))
        (sha256
-	(base32 "08kksg50nmnfzc8hl8bxzm40j6p2x5niyz0s4xj99hrkv8vz8520"))))
-    
+        (base32 "08kksg50nmnfzc8hl8bxzm40j6p2x5niyz0s4xj99hrkv8vz8520"))))
+
     (build-system cargo-build-system)
-    (inputs (cargo-inputs 'ewm-core #:module '(config packages rust-crates)))
-    ;(inputs (list emacs))
+    (inputs (cargo-inputs 'ewm-core
+                          #:module '(config packages rust-crates)))
+    ;; (inputs (list emacs))
     (arguments
      (list
       #:install-source? #f
-      #:features
-      '(list "screencast")
-      
+      #:features '(list "screencast")
+
       #:phases
       #~(modify-phases %standard-phases
-
+          
           ;; Build happens in compositor/
           (add-before 'build 'enter-compositor
             (lambda _
@@ -65,19 +65,16 @@
               (let* ((out (assoc-ref outputs "out"))
                      (moddir (string-append out "/lib/emacs/modules")))
                 (mkdir-p moddir)
-                (copy-file
-                 "target/release/libewm_core.so"
-                 (string-append moddir "/libewm_core.so")))))
+                (copy-file "target/release/libewm_core.so"
+                           (string-append moddir "/libewm_core.so")))))
 
           ;; Install Lisp
           (add-after 'install-module 'install-lisp
             (lambda* (#:key outputs #:allow-other-keys)
               (let* ((out (assoc-ref outputs "out"))
-                     (lispdir (string-append
-                               out "/share/emacs/site-lisp/ewm")))
+                     (lispdir (string-append out "/share/emacs/site-lisp/ewm")))
                 (mkdir-p lispdir)
                 (copy-recursively "../../lisp" lispdir)))))))
-
 
     (home-page "https://github.com/.../ewm")
     (synopsis "Wayland compositor module for Emacs")
