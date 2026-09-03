@@ -3,4 +3,5 @@
   #:export (%config-root))
 
 (define %config-root
- (getenv "GUIX_CONFIG_ROOT"))
+  (or (getenv "CONFIG_ROOT")
+      (error "CONFIG_ROOT environment variable is not set")))

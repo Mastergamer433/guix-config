@@ -6,7 +6,7 @@
     fluxer-nix.url = "github:ardishko/fluxer-nix";
   };
 
-  outputs = { nixpkgs, ... }:
+  outputs = { nixpkgs, fluxer-nix, ... }:
     let
       systems = [
         "x86_64-linux"
@@ -19,7 +19,7 @@
       packagesFor = { pkgs, hostname }:
         with pkgs;
         [
-	  inputs.fluxer-nix.packages.${pkgs.system}.fluxer
+	  fluxer-nix.packages.${pkgs.system}.fluxer
           bat
           fd
           fzf
@@ -27,17 +27,9 @@
           jq
           ripgrep
         ]
-        ++ lib.optionals (hostname == "desktop") [
+        ++ lib.optionals (hostname == "harry-potter") [
           neovim
           tmux
-        ]
-        ++ lib.optionals (hostname == "laptop") [
-          brightnessctl
-          powertop
-        ]
-        ++ lib.optionals (hostname == "server") [
-          htop
-          btop
         ];
     in
     {
@@ -46,9 +38,7 @@
           pkgs = nixpkgs.legacyPackages.${system};
 
           hostnames = [
-            "desktop"
-            "laptop"
-            "server"
+            "harry-potter"
           ];
         in
         builtins.listToAttrs (map (hostname: {

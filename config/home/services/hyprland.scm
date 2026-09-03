@@ -1,99 +1,45 @@
 (define-module (config home services hyprland)
-  #:use-module (gnu packages)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu services)
-  #:use-module (gnu services configuration)
   #:use-module (gnu home services)
-  #:use-module (gnu home services shepherd)
-  #:use-module (guix gexp)
-  #:use-module (guix packages)
-  #:use-module (guix build utils)
+  #:use-module (gnu packages wm)
+  #:use-module (gnu packages xdisorg)
   #:use-module (config packages hyprland)
-  #:export (home-hyprland-service-type))
+  #:use-module (guix gexp)
+  #:use-module (config utils)
+  #:use-module (gnu services configuration)
 
-;; ----------------------------
-;; Configuration record
-;; ----------------------------
+  #:export (home-hyprland-service-type
+            home-hyprland-configuration))
 
-(define-configuration/no-serialization home-hyprland-service-configuration
-  (hyprland
-   (package hyprland)
-   "Hyprland package to use.")
-
+(define-configuration/no-serialization home-hyprland-configuration
   (config
-   (package my-hypr-config)
-   "Package containing the user's Hyprland configuration.")
+   (file-like my-hypr-config)
+   "Hyprland configuration package."))
 
-  (plugins
-   (list '())
-   "List of Hyprland plugin packages."))
+(define (home-hyprland-files config)
+  `((" .config/hypr"
+     ,(computed-file
+       "hypr"
+       #~(begin
+           (mkdir #$output)
 
-;; ----------------------------
-;; Plugin -> Lua loader
-;; ----------------------------
+           (copy-recursively
+            #$(file-append
+               (home-hyprland-configuration-config config)
+               "/share/hypr")
+            #$output)
 
-(define (plugin->so-path plugin)
-  (string-append
-   plugin "/lib/lib"
-   (package-name plugin)
-   ".so"))
+           (copy-file
+            #$(service-config-file "hyprlock.conf")
+            (string-append
+             #$output
+             "/hyprlock.conf")))))))
 
-(define (plugins->lua plugins)
-  (mixed-text-file
-   "plugins.lua"
-   (append-map
-    (lambda (plugin)
-      (list
-       "hl.plugin.load(\""
-       (plugin->so-path plugin)
-       "\")\n"))
-    plugins)))
-
-;; ----------------------------
-;; Profile packages
-;; ----------------------------
-
-(define (hyprland-profile config)
-  (append
-   (list
-    (home-hyprland-service-configuration-hyprland config))
-   (home-hyprland-service-configuration-plugins config)))
-
-;; ----------------------------
-;; Build final ~/.config/hypr
-;; ----------------------------
-
-(define (hypr-config-directory config)
-  (let ((base-config (home-hyprland-service-configuration-config config))
-        (plugins     (home-hyprland-service-configuration-plugins config)))
-
-    (computed-file
-     "hypr-config"
-
-     #~(begin
-         (use-modules (guix build utils))
-
-         ;; copy your fennel-compiled config
-         (copy-recursively
-          (string-append #$base-config "/share/hypr")
-          #$output)
-
-         ;; add generated plugin loader
-         (copy-file
-          #$(plugins->lua plugins)
-          (string-append #$output "/plugins.lua"))))))
-
-;; ----------------------------
-;; Home files service
-;; ----------------------------
-
-(define (hyprland-files config)
-  `(("config/hypr"
-     ,(hypr-config-directory config))))
-
-;; ----------------------------
-;; Service type
-;; ----------------------------
+(define (home-hyprland-packages config)
+  (list
+   hyprland
+   hyprlock
+   hypridle
+   (home-hyprland-configuration-config config)))
 
 (define home-hyprland-service-type
   (service-type
@@ -101,18 +47,17 @@
 
    (extensions
     (list
-     ;; install runtime packages
      (service-extension
       home-profile-service-type
-      hyprland-profile)
+      home-hyprland-packages)
 
-     ;; install ~/.config/hypr
      (service-extension
       home-files-service-type
-      hyprland-files)))
+      home-hyprland-files)))
 
    (default-value
-    (home-hyprland-service-configuration))
+    (home-hyprland-configuration
+     (config my-hypr-config)))
 
    (description
-    "Home service for Hyprland using a configuration package plus plugin list.")))
+    "Configure Hyprland and install its required packages.")))

@@ -1,0 +1,80 @@
+{
+  "nodes": {
+    "fluxer-nix": {
+      "inputs": {
+        "fluxer-src": "fluxer-src",
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1777424791,
+        "narHash": "sha256-6Wo70gCtERRd7/asBRpzisy6oFP2NkAX9Kog0U54hok=",
+        "owner": "ardishko",
+        "repo": "fluxer-nix",
+        "rev": "2b74eafb870a6f5f863e80a0308cd292e5debcd7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ardishko",
+        "repo": "fluxer-nix",
+        "type": "github"
+      }
+    },
+    "fluxer-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1775750396,
+        "narHash": "sha256-94rLtgG5s/aJfNL2v/KTqLOnGsT05Qy6l3jPuL15SkE=",
+        "owner": "fluxerapp",
+        "repo": "fluxer",
+        "rev": "ee1f27fe1a372b5291aead8042944afd706bf5db",
+        "type": "github"
+      },
+      "original": {
+        "owner": "fluxerapp",
+        "ref": "refactor",
+        "repo": "fluxer",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1777268161,
+        "narHash": "sha256-bxrdOn8SCOv8tN4JbTF/TXq7kjo9ag4M+C8yzzIRYbE=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "1c3fe55ad329cbcb28471bb30f05c9827f724c76",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1786963906,
+        "narHash": "sha256-3tkeMWSvHPo3tYljfXbPC/TgknikU1GvdVr/DkdfvE0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "f4b6996c4e8b9ee06ce147ec344c885f51071b14",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "fluxer-nix": "fluxer-nix",
+        "nixpkgs": "nixpkgs_2"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

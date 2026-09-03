@@ -1,0 +1,13 @@
+#!/bin/sh
+
+CONFIG_ROOT="/home/mg433/config"
+GREEN='\033[1;32m'
+BLUE='\033[1;34m'
+NC='\033[0m'
+
+echo
+echo -e "${GREEN}Updating ${BLUE}$(hostname)${GREEN}...${NC}"
+echo
+
+sudo CONFIG_ROOT="$CONFIG_ROOT" guix system --allow-downgrades -L $CONFIG_ROOT reconfigure $CONFIG_ROOT/config/systems/$(hostname).scm
+nix profile install --profile "$HOME/.local/state/nix/profiles/my-nix" $CONFIG_ROOT/nix-flake#harry-potter

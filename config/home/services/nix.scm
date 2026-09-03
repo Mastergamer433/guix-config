@@ -4,6 +4,7 @@
   #:use-module (gnu services configuration)
   #:use-module (gnu home services)
   #:use-module (guix gexp)
+  #:use-module (config utils)
   #:export (home-nix-configuration
             home-nix-service-type))
 
@@ -19,22 +20,33 @@
 (define (home-nix-profile-service config)
   (list nix))
 
+(define (home-nix-files-service config)
+  `((" .config/nix/nix.conf"
+     ,(service-config-file "nix.conf"))))
+
 (define (home-nix-activation-service config)
   (let ((flake (home-nix-configuration-flake config))
         (profile (home-nix-configuration-profile config)))
     #~(begin
         (use-modules (guix build utils))
 
-        (invoke
-         #$(file-append nix "/bin/nix")
-         "profile"
-         "install"
-         "--profile"
-         #$profile
-         (string-append
-          #$(local-file flake #:recursive? #t)
-          "#"
-          (gethostname))))))
+        (let ((profile
+               (if (string-prefix? "~/" #$profile)
+                   (string-append (getenv "HOME")
+                                  (substring #$profile 1))
+                   #$profile)))
+
+          (format #t "Installing Nix flake into ~a~%" profile)
+
+          (invoke #$(file-append nix "/bin/nix")
+                  "profile"
+                  "install"
+                  "--profile"
+                  profile
+                  (string-append
+                   #$(local-file flake #:recursive? #t)
+                   "#"
+                   (gethostname)))))))
 
 (define (home-nix-environment-variables-service config)
   (let ((profile (home-nix-configuration-profile config)))
@@ -59,8 +71,12 @@
       home-nix-profile-service)
 
      (service-extension
-      home-activation-service-type
-      home-nix-activation-service)
+      home-files-service-type
+      home-nix-files-service)
+
+;     (service-extension
+;      home-activation-service-type
+;      home-nix-activation-service)
 
      (service-extension
       home-environment-variables-service-type

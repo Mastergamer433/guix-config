@@ -29,7 +29,9 @@
         (org :enabled t :org-dir "~/org" :org-roam-dir "~/notes")))
 
 (my/load-modules-recursive nil my/config-options)
-
+(use-package move-text
+  :bind (("M-p" . move-text-up)
+	 ("M-n" . move-text-down)))
 (defvar emacs-config-directory "~/config/files/.emacs.d")
 
 (defun my/get-emacs-hosts ()

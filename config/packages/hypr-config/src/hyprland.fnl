@@ -52,7 +52,7 @@
 
 (hl.bind "SUPER + Return" (hl.dsp.exec_cmd "foot"))
 (hl.bind "SUPER + Q" (hl.dsp.window.close))
-(hl.bind "SUPER + E" (hl.dsp.exec_cmd "emacsclient -t"))
+(hl.bind "SUPER + E" (hl.dsp.exec_cmd "emacsclient -c"))
 (hl.bind "SUPER + D" (hl.dsp.exec_cmd "rofi -show run"))
 (for [i 1 10]
   (local key (% i 10))

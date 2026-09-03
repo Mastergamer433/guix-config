@@ -36,6 +36,13 @@
   #:use-module (config home services spotifyd)
   #:use-module (config home services emacs)
   #:use-module (config home services nix)
+  #:use-module (config home services bin)
+  #:use-module (config home services foot)
+  #:use-module (config home services stumpwm)
+  #:use-module (config home services cargo)
+  #:use-module (config home services nixpkgs)
+  #:use-module (config home services eww)
+  #:use-module (config home services hyprland)
   #:use-module (config packages wlroots)
   #:use-module (config packages hyprland)
   #:use-module (config packages wine-tools)
@@ -65,11 +72,12 @@
                     kubectl
                     hyprland
                     foot
-		    eww
-		    font-nerd-fira-code
-		    playerctl
-		    ;bottles
-		    ))
+                    eww
+                    font-nerd-fira-code
+                    playerctl
+                    ;; bottles
+                    hyprlock
+                    hypridle))
 
     (services
      (list (service home-kmonad-service-type)
@@ -78,12 +86,33 @@
            (service home-dbus-service-type)
            (service home-pipewire-service-type)
            (service home-emacs-service-type)
-	   (service home-xdg-desktop-portal-hyprland-service-type)
-	   (service home-nix-service-type
-                    (home-nix-configuration
-                     (flake (string-append %config-root "/nix-flake"))
-                     (profile "$HOME/.local/state/nix/profiles/my-nix")))
-            (service home-bash-service-type
+           (service home-xdg-desktop-portal-hyprland-service-type)
+           (service home-nix-service-type
+                    (home-nix-configuration (flake (string-append %config-root
+                                                    "/nix-flake"))
+                                            (profile
+                                             "$HOME/.local/state/nix/profiles/my-nix")))
+
+           (service home-bin-service-type
+                    (home-bin-configuration (programs (list "activate-profile"
+                                                       "update-home"
+                                                       "update-system"))))
+
+           ;; (service home-cargo-service-type)
+           
+           ;; (service home-eww-service-type)
+           
+           ;; (service home-foot-service-type)
+           
+           ;; (service home-hyprland-service-type
+           ;; (home-hyprland-configuration
+           ;; (config my-hypr-config)))
+           
+           ;; (service home-nixpkgs-service-type)
+           
+           ;; (service home-stumpwm-service-type)
+           
+           (service home-bash-service-type
                     (home-bash-configuration
                      (variables `(("EDITOR" . "emacs -q -nw")
                                   ("PATH" . "~/.bin/:$PATH")))
@@ -105,9 +134,9 @@ export XDG_DATA_DIRS=\"$HOME/.local/share/flatpak/exports/share/:$XDG_DATA_DIRS\
                                                                      "/bin/pinentry-qt"))
                                                   (ssh-support? #t)))
 
-(service home-dotfiles-service-type
-         (home-dotfiles-configuration
-          (source-directory %config-root)
-          (directories '("files"))))
-	(service home-files-service-type `((".config/hypr" ,(file-append my-hypr-config "/share/hypr"))))))))
+           ;; (service home-dotfiles-service-type
+           ;; (home-dotfiles-configuration
+           ;; (source-directory %config-root)
+           ;; (directories '("files"))))
+           ))))
 
