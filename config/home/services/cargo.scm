@@ -9,24 +9,19 @@
   (list rust))
 
 (define (home-cargo-files-service config)
-  `((" .cargo/config.toml"
-     ,(service-config-file "config.toml"))))
+  `((" .cargo/config.toml" ,(service-config-file "config.toml"))))
 
 (define-public home-cargo-service-type
-  (service-type
-   (name 'home-cargo)
+  (service-type (name 'home-cargo)
 
-   (extensions
-    (list
-;     (service-extension
-;      home-profile-service-type
-;      home-cargo-profile-service)
+                (extensions (list
+                             ;; (service-extension
+                             ;; home-profile-service-type
+                             ;; home-cargo-profile-service)
+                             
+                             (service-extension home-files-service-type
+                                                home-cargo-files-service)))
 
-     (service-extension
-      home-files-service-type
-      home-cargo-files-service)))
+                (default-value #f)
 
-   (default-value #f)
-
-   (description
-    "Install and configure Cargo.")))
+                (description "Install and configure Cargo.")))

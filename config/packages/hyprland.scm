@@ -15,7 +15,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages freedesktop)
-  #:use-module (gnu packages wm)
+  #:use-module (gnu packages window-management)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages vulkan)
@@ -79,71 +79,71 @@
     (home-page "")
     (license #f)))
 
-(define-public hyprland-for-plugins
-  (package
-    (inherit hyprland)
-
-    (outputs
-     (list "out" "dev"))
-
-    (arguments
-     (substitute-keyword-arguments (package-arguments hyprland)
-       ((#:configure-flags flags #~'())
-        #~(cons*
-            (string-append
-             "-DCMAKE_INSTALL_INCLUDEDIR="
-             #$output:dev
-             "/include")
-            (string-append
-             "-DCMAKE_INSTALL_LIBDIR="
-             #$output:out
-             "/lib")
-            #$flags))))))
-
-(define-public hyprland-plugin-hy3
-  (package
-    (name "hyprland-plugin-hy3")
-    (version "0.1")
-        (source
-     (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/outfoxxed/hy3")
-             (commit "ded5e168f3a8d1290b34d696930098e8c141404d")))
-       (sha256 (base32 "06yd8jzqgrdjlxryjpgcb5vg71v1g0c19bajkcq4mbssizfxhqpa"))))
-
-    (build-system cmake-build-system)
-
-    (arguments
-     (list
-      #:configure-flags
-      #~(list "-DCMAKE_BUILD_TYPE=RelWithDebInfo" "-DHY3_NO_VERSION_CHECK=OFF")))
-
-    (native-inputs
-     (list ninja
-           pkg-config))
-(inputs
- (list `(,hyprland-for-plugins "dev")
-       hyprcursor
-       hyprgraphics
-       hyprlang
-       hyprutils
-       aquamarine
-       mesa
-       xcb-util-wm
-       xcb-util-errors
-       lua
-       glslang
-       libdrm
-       libinput
-       wayland
-       libxkbcommon
-       pixman
-       pango
-       cairo))
-
-    (synopsis "Hyprland plugin for an i3-like manual tiling layout")
-    (description
-     "Hyprland plugin for an i3-like manual tiling layout.")
-    (home-page "https://github.com/outfoxxed/hy3")
-    (license license:gpl3+)))
+;(define-public hyprland-for-plugins
+;  (package
+;    (inherit hyprland)
+;
+;    (outputs
+;     (list "out" "dev"))
+;
+;    (arguments
+;     (substitute-keyword-arguments (package-arguments hyprland)
+;       ((#:configure-flags flags #~'())
+;        #~(cons*
+;            (string-append
+;             "-DCMAKE_INSTALL_INCLUDEDIR="
+;             #$output:dev
+;             "/include")
+;            (string-append
+;             "-DCMAKE_INSTALL_LIBDIR="
+;             #$output:out
+;             "/lib")
+;            #$flags))))))
+;
+;(define-public hyprland-plugin-hy3
+;  (package
+;    (name "hyprland-plugin-hy3")
+;    (version "0.1")
+;        (source
+;     (origin
+;       (method git-fetch)
+;       (uri (git-reference
+;             (url "https://github.com/outfoxxed/hy3")
+;             (commit "ded5e168f3a8d1290b34d696930098e8c141404d")))
+;       (sha256 (base32 "06yd8jzqgrdjlxryjpgcb5vg71v1g0c19bajkcq4mbssizfxhqpa"))))
+;
+;    (build-system cmake-build-system)
+;
+;    (arguments
+;     (list
+;      #:configure-flags
+;      #~(list "-DCMAKE_BUILD_TYPE=RelWithDebInfo" "-DHY3_NO_VERSION_CHECK=OFF")))
+;
+;    (native-inputs
+;     (list ninja
+;           pkg-config))
+;(inputs
+; (list `(,hyprland-for-plugins "dev")
+;       hyprcursor
+;       hyprgraphics
+;       hyprlang
+;       hyprutils
+;       aquamarine
+;       mesa
+;       xcb-util-wm
+;       xcb-util-errors
+;       lua
+;       glslang
+;       libdrm
+;       libinput
+;       wayland
+;       libxkbcommon
+;       pixman
+;       pango
+;       cairo))
+;
+;    (synopsis "Hyprland plugin for an i3-like manual tiling layout")
+;    (description
+;     "Hyprland plugin for an i3-like manual tiling layout.")
+;    (home-page "https://github.com/outfoxxed/hy3")
+;    (license license:gpl3+)))

@@ -37,7 +37,9 @@
                                           (target (string-append bin-directory
                                                    "/" file)))
                                       (when (file-exists? source)
-                                        (symlink source target))))
+					                (copy-file source target)
+                (chmod target #o755))))
+                            
                                   (scandir #$(file-append package "/bin")
                                            (lambda (file)
                                              (not (member file

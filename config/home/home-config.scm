@@ -18,7 +18,7 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages java)
   #:use-module (gnu packages lisp-xyz)
-  #:use-module (gnu packages wm)
+  #:use-module (gnu packages window-management)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages haskell-xyz)
   #:use-module (gnu packages gcc)
@@ -43,46 +43,34 @@
   #:use-module (config home services nixpkgs)
   #:use-module (config home services eww)
   #:use-module (config home services hyprland)
-  #:use-module (config packages wlroots)
   #:use-module (config packages hyprland)
   #:use-module (config packages wine-tools)
   #:use-module (config home services xdg-desktop-portal-hyprland)
   #:use-module (config vars)
+  #:use-module (srfi srfi-1)
   #:export (my-home))
 
 (define my-home
   (home-environment
     (packages (list pinentry-qt
                     alacritty
-                    sbcl
-                    sbcl-slynk
-                    stumpwm
-                    sbcl-stumpwm-ttf-fonts
                     font-fira-code
                     direnv
                     eza
                     openssh
                     openjdk21
-                    xmonad
-                    ghc
-                    ghc-xmonad-contrib
-                    ghc-x11
                     gcc
                     rofi
                     kubectl
-                    hyprland
-                    foot
-                    eww
+			    foot
                     font-nerd-fira-code
                     playerctl
                     ;; bottles
-                    hyprlock
-                    hypridle))
+		    ))
 
     (services
      (list (service home-kmonad-service-type)
            (service home-spotifyd-service-type)
-           (service home-sway-service-type)
            (service home-dbus-service-type)
            (service home-pipewire-service-type)
            (service home-emacs-service-type)
@@ -97,6 +85,39 @@
                     (home-bin-configuration (programs (list "activate-profile"
                                                        "update-home"
                                                        "update-system"))))
+	   (service home-sway-service-type
+		    (sway-configuration
+		      (variables `((mod . "Mod4")
+				   (term . "foot")
+				   (menu . "wofi --show drun")))
+		      (startup-programs
+			'("eww"))
+		      (keybindings
+			`((´mod-Return . "exec $term")
+			  ; switching workspaces and moving containers between workspaces
+			  ,@(append-map
+			      (lambda (n)
+				`((,(string->symbol (format #f "$mod+Shift+~a" n))
+				   . ,(format #f "workspace number ~a" n))
+				  (,(string->symbol (format #f "$mod+Shfit+~a" n))
+				    . ,(format #f "move container to workspace number ~a" n))))
+
+			      (iota 9 1))
+                         ,@(append-map
+			     (lambda (x)
+			       `((,(string->symbol (format #f "$mod+~a" (car x)))
+				   . ,(format #f "focus ~a" (cdr x)))
+				 (,(string->symbol (format #f "$mod+Shift+~a" (car x)))
+				   . ,(format #f "move ~a" (cdr x)))))
+			     '(("h" . "left")
+			("j" . "down")
+			("k" . "up")
+			("l" . "right")))
+                           ($mod+q . "kill")
+                           ($mod+r . "reload")
+                           ($mod+Shift+e . "exec swaymsg exit")
+			   ($mod+e . "layout toggle split")
+			 ))))
 
            ;; (service home-cargo-service-type)
            
@@ -104,9 +125,9 @@
            
            ;; (service home-foot-service-type)
            
-           ;; (service home-hyprland-service-type
-           ;; (home-hyprland-configuration
-           ;; (config my-hypr-config)))
+           (service home-hyprland-service-type
+            (home-hyprland-configuration
+            (config my-hypr-config)))
            
            ;; (service home-nixpkgs-service-type)
            

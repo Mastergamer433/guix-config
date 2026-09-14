@@ -2,31 +2,24 @@
   #:use-module (gnu services)
   #:use-module (gnu home services)
   #:use-module (config utils)
-  #:use-module (gnu packages wm)
+  #:use-module (gnu packages window-management)
   #:export (home-stumpwm-service-type))
 
 (define (home-stumpwm-profile-service config)
   (list stumpwm))
 
 (define (home-stumpwm-files-service config)
-  `((" .stumpwm.d"
-     ,(service-config-directory-file))))
+  `((" .stumpwm.d" ,(service-config-directory-file))))
 
 (define-public home-stumpwm-service-type
-  (service-type
-   (name 'home-stumpwm)
+  (service-type (name 'home-stumpwm)
 
-   (extensions
-    (list
-     (service-extension
-      home-profile-service-type
-      home-stumpwm-profile-service)
+                (extensions (list (service-extension home-profile-service-type
+                                   home-stumpwm-profile-service)
 
-     (service-extension
-      home-files-service-type
-      home-stumpwm-files-service)))
+                                  (service-extension home-files-service-type
+                                   home-stumpwm-files-service)))
 
-   (default-value #f)
+                (default-value #f)
 
-   (description
-    "Install and configure StumpWM.")))
+                (description "Install and configure StumpWM.")))

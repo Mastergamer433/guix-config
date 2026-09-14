@@ -21,9 +21,10 @@
   #:use-module (gnu packages terminals)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages wget)
-  #:use-module (gnu packages wm)
+  #:use-module (gnu packages window-management)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages package-management)
+  #:use-module (gnu packages linux)
   #:use-module (nongnu packages nvidia)
   #:use-module (nonguix transformations)
   #:use-module (nongnu system linux-initrd)
@@ -55,21 +56,29 @@
     (firmware (list linux-firmware))
 
     (initrd-modules (append '("dm-crypt" "sha256" "btrfs")
-                            %base-initrd-modules))
+                            (base-initrd-modules linux-libre)
+			    ))
 
     (users (cons (user-account
                    (name "mg433")
                    (group "users")
                    (home-directory "/home/mg433")
                    (password (crypt "InitialPassword!" "$6$abc"))
-                   (supplementary-groups '("wheel" "netdev" "audio" "video")))
+                   (supplementary-groups '("wheel" "netdev" "audio" "video" "input")))
                  %base-user-accounts))
     (packages (append (list flatpak
                             ;; nvidia-container-toolkit
                             stumpwm xmonad hyprland) %my-base-packages))
     (services
      (append %base-services
-             (list (service nix-service-type
+             (list
+	         (udev-rules-service
+    'uinput
+    (udev-rule
+     "90-uinput.rules"
+     "KERNEL==\"uinput\", GROUP=\"input\", MODE=\"0660\""))
+
+	      (service nix-service-type
                             (nix-configuration (extra-config '("extra-experimental-features = nix-command flakes"))))
                    (service iwd-service-type)
                    ;; (service docker-service-type
