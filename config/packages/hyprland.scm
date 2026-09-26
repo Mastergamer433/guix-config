@@ -19,8 +19,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages cpp)
   #:use-module (gnu packages vulkan)
-  #:use-module (gnu packages build-tools)
-)
+  #:use-module (gnu packages build-tools))
 
 (define-public my-hypr-config
   (package

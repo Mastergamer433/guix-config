@@ -26,6 +26,8 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages music)
   #:use-module (gnu services)
+  #:use-module (gnu system)
+  #:use-module (gnu system keyboard)
   #:use-module (nongnu packages k8s)
   #:use-module (guix packages)
   #:use-module (guix git-download)
@@ -43,12 +45,15 @@
   #:use-module (config home services nixpkgs)
   #:use-module (config home services eww)
   #:use-module (config home services hyprland)
+  #:use-module (config home services niri)
   #:use-module (config packages hyprland)
   #:use-module (config packages wine-tools)
+  #:use-module (config packages flameshot)
   #:use-module (config home services xdg-desktop-portal-hyprland)
   #:use-module (config vars)
   #:use-module (srfi srfi-1)
   #:export (my-home))
+
 
 (define my-home
   (home-environment
@@ -62,11 +67,12 @@
                     gcc
                     rofi
                     kubectl
-			    foot
+                    foot
                     font-nerd-fira-code
                     playerctl
                     ;; bottles
-		    ))
+		    flameshot
+                    ))
 
     (services
      (list (service home-kmonad-service-type)
@@ -85,50 +91,91 @@
                     (home-bin-configuration (programs (list "activate-profile"
                                                        "update-home"
                                                        "update-system"))))
-	   (service home-sway-service-type
-		    (sway-configuration
-		      (variables `((mod . "Mod4")
-				   (term . "foot")
-				   (menu . "wofi --show drun")))
-		      (startup-programs
-			'("eww"))
-		      (keybindings
-			`((´mod-Return . "exec $term")
-			  ; switching workspaces and moving containers between workspaces
-			  ,@(append-map
-			      (lambda (n)
-				`((,(string->symbol (format #f "$mod+Shift+~a" n))
-				   . ,(format #f "workspace number ~a" n))
-				  (,(string->symbol (format #f "$mod+Shfit+~a" n))
-				    . ,(format #f "move container to workspace number ~a" n))))
+           (service home-sway-service-type
+                    (sway-configuration (variables `((mod . "Mod4")
+                                                     (term . "foot")
+                                                     (menu . "wofi --show drun")))
+                                        (startup-programs '("eww"))
+                                        (keybindings `((´mod-Return . "exec $term")
+                                                       ;; switching workspaces and moving containers between workspaces
+                                                       ,@(append-map (lambda (n)
+                                                                       `((,(string->symbol
+                                                                            (format
+                                                                             #f
+                                                                             "$mod+Shift+~a"
+                                                                             n))
+                                                                          unquote
+                                                                          (format
+                                                                           #f
+                                                                           "workspace number ~a"
+                                                                           n))
+                                                                         (,(string->symbol
+                                                                            (format
+                                                                             #f
+                                                                             "$mod+Shfit+~a"
+                                                                             n))
+                                                                          unquote
+                                                                          (format
+                                                                           #f
+                                                                           "move container to workspace number ~a"
+                                                                           n))))
 
-			      (iota 9 1))
-                         ,@(append-map
-			     (lambda (x)
-			       `((,(string->symbol (format #f "$mod+~a" (car x)))
-				   . ,(format #f "focus ~a" (cdr x)))
-				 (,(string->symbol (format #f "$mod+Shift+~a" (car x)))
-				   . ,(format #f "move ~a" (cdr x)))))
-			     '(("h" . "left")
-			("j" . "down")
-			("k" . "up")
-			("l" . "right")))
-                           ($mod+q . "kill")
-                           ($mod+r . "reload")
-                           ($mod+Shift+e . "exec swaymsg exit")
-			   ($mod+e . "layout toggle split")
-			 ))))
+                                                                     (iota 9 1))
+                                                       ,@(append-map (lambda (x)
+                                                                       `((,(string->symbol
+                                                                            (format
+                                                                             #f
+                                                                             "$mod+~a"
+                                                                             (car
+                                                                              x)))
+                                                                          unquote
+                                                                          (format
+                                                                           #f
+                                                                           "focus ~a"
+                                                                           (cdr
+                                                                            x)))
+                                                                         (,(string->symbol
+                                                                            (format
+                                                                             #f
+                                                                             "$mod+Shift+~a"
+                                                                             (car
+                                                                              x)))
+                                                                          unquote
+                                                                          (format
+                                                                           #f
+                                                                           "move ~a"
+                                                                           (cdr
+                                                                            x)))))
+                                                                     '(("h" . "left")
+                                                                       ("j" . "down")
+                                                                       ("k" . "up")
+                                                                       ("l" . "right")))
+                                                       ($mod+q . "kill")
+                                                       ($mod+r . "reload")
+                                                       ($mod+Shift+e . "exec swaymsg exit")
+                                                       ($mod+e . "layout toggle split")))))
 
+	   (service home-niri-service-type
+           (home-niri-configuration
+            (package niri)
+            (extra-packages
+             (list foot
+                   fuzzel))
+            (data
+             `(
+               ("keyboard" . (("layout" . ,(keyboard-layout-name %keyboard-layout))))
+               ("layout" . (("gaps" . 16)
+			    ("border" . (("width" . 4)))))
+	       ("theme" . ,%theme)))))
            ;; (service home-cargo-service-type)
            
-           ;; (service home-eww-service-type)
+           (service home-eww-service-type)
            
-           ;; (service home-foot-service-type)
+           (service home-foot-service-type)
            
            (service home-hyprland-service-type
-            (home-hyprland-configuration
-            (config my-hypr-config)))
-           
+                    (home-hyprland-configuration (config my-hypr-config)))
+
            ;; (service home-nixpkgs-service-type)
            
            ;; (service home-stumpwm-service-type)

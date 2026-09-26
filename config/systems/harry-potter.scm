@@ -30,9 +30,11 @@
   #:use-module (nongnu system linux-initrd)
   #:use-module (nongnu packages linux)
   #:use-module (config systems base-system)
-;  #:use-module (config systems containers)
+  ;; #:use-module (config systems containers)
   #:use-module (config packages nvidia)
-  #:use-module (config home home-config))
+  #:use-module (config home home-config)
+  #:use-module (config vars)
+  #:export (%my-os))
 
 (define secrets-path
   "../../secrets")
@@ -49,36 +51,32 @@
     (timezone "Europe/Stockholm")
     (locale "en_US.utf8")
 
-    (keyboard-layout (keyboard-layout "se"))
+    (keyboard-layout %keyboard-layout)
 
     (kernel linux)
     (initrd microcode-initrd)
     (firmware (list linux-firmware))
 
     (initrd-modules (append '("dm-crypt" "sha256" "btrfs")
-                            (base-initrd-modules linux-libre)
-			    ))
+                            (base-initrd-modules linux-libre)))
 
     (users (cons (user-account
                    (name "mg433")
                    (group "users")
                    (home-directory "/home/mg433")
                    (password (crypt "InitialPassword!" "$6$abc"))
-                   (supplementary-groups '("wheel" "netdev" "audio" "video" "input")))
-                 %base-user-accounts))
+                   (supplementary-groups '("wheel" "netdev" "audio" "video"
+                                           "input"))) %base-user-accounts))
     (packages (append (list flatpak
                             ;; nvidia-container-toolkit
                             stumpwm xmonad hyprland) %my-base-packages))
     (services
      (append %base-services
-             (list
-	         (udev-rules-service
-    'uinput
-    (udev-rule
-     "90-uinput.rules"
-     "KERNEL==\"uinput\", GROUP=\"input\", MODE=\"0660\""))
+             (list (udev-rules-service 'uinput
+                                       (udev-rule "90-uinput.rules"
+                                        "KERNEL==\"uinput\", GROUP=\"input\", MODE=\"0660\""))
 
-	      (service nix-service-type
+                   (service nix-service-type
                             (nix-configuration (extra-config '("extra-experimental-features = nix-command flakes"))))
                    (service iwd-service-type)
                    ;; (service docker-service-type
@@ -108,7 +106,7 @@
                    ;; keyboard-layout)))
                    (simple-service 'oci-provisioning oci-service-type
                                    (oci-extension (containers (list ;bitlbee-container
-								    (oci-container-configuration
+                                                                    (oci-container-configuration
                                                                      (image
                                                                       "ollama/ollama")
                                                                      (ports '(("11434" . "11434")))
@@ -146,5 +144,6 @@
                                          'fat))
                            (type "vfat")) %base-file-systems))))
 
-((nonguix-transformation-nvidia)
+((nonguix-transformation-nvidia
+   #:open-source-kernel-module? #t)
  %my-os)

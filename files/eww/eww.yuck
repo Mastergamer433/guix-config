@@ -1,4 +1,6 @@
 (defwindow bar
+
+
   :monitor 0
   :windowtype "dock"
   :exclusive true
@@ -10,46 +12,70 @@
       :height "36px"
       :anchor "top center")
 
-  (bar-content))
+  (bar))
 
-(defwidget bar-content []
+(deflisten player
+  :initial "No music playing"
+  "playerctl -F -f '{{title}}|||{{artist}}' metadata")
+
+(defwidget music []
   (box
-    :class "bar"
-    :orientation "h"
-    :space-evenly false
-    
+    :class "music"
+    :orientation "v"
+    :halign "center"
+    :valign "center"
 
     (label
-    :halign "start"
-    :hexpand true
-    :text "Hyprland")
+      :class "music-title"
+      :text {player == "No music playing"
+             ? "Nothing playing"
+             : strsplit(player, "|||")[0]})
 
+    (label
+      :class "music-artist"
+      :text {player == "No music playing"
+             ? ""
+             : strsplit(player, "|||")[1]})))
+
+(deflisten workspaces
+  :initial "[]"
+  "~/.config/eww/scripts/niri-workspaces")
+
+(defwidget workspace [id idx name focused]
+  (button
+    :class {focused == "true"
+            ? "workspace workspace-active"
+            : "workspace"}
+    :onclick "niri msg action focus-workspace ${idx}"
+    name))
+
+(defwidget workspaces []
+  (box
+    :class "workspaces"
+    :orientation "h"
+    :spacing 6
+
+    (for workspace in workspaces
+      (workspace
+        :id {workspace.id}
+        :idx {workspace.idx}
+        :name {workspace.name}
+        :focused {workspace.focused}))))
+
+(defwidget bar []
+  (box
+:class "bar-container"
 (centerbox
-  (box
-    :halign "end"
-    (label :text artist)
-    (label :text " "))
+    :class "bar"
 
-  (label
-    :text "-"
-    :halign "center")
+    (box
+      :halign "start"
+      :spacing 12
+      (label :class "logo" :text "")
+      (workspaces))
 
-  (box
-    :halign "start"
-    (label :text " ")
-    (label :text title)))
+    (music)
 
-  (label
-  :halign "end"
-  :hexpand true
-  :text clock)
-    ))
-    
-
-(defpoll clock :interval "1s"
-  `date +"%Y-%m-%dT%H:%M:%S%:z"`)
-(defpoll artist :interval "3s"
-  `playerctl metadata artist`)
-
-(defpoll title :interval "3s"
-  `playerctl metadata title`)
+    (box
+      :halign "end"
+      :spacing 12))))

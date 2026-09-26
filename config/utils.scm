@@ -3,7 +3,8 @@
   #:use-module (guix gexp)
   #:use-module (srfi srfi-1)
   #:export (service-config-file service-config-directory
-                                service-config-directory-file))
+                                service-config-directory-file
+				theme->scss))
 
 (define-syntax service-config-directory
   (lambda (stx)
@@ -26,3 +27,15 @@
                 ((_)
                  (local-file (service-config-directory)
                              #:recursive? #t))))
+
+(define (theme->scss theme)
+  (string-join
+   (map (lambda (entry)
+          (format #f "$~a: #~a;"
+                  (car entry)
+                  (cdr entry)))
+        (filter
+         (lambda (entry)
+           (string-prefix? "base" (car entry)))
+         theme))
+   "\n"))

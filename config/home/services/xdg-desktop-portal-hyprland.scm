@@ -30,10 +30,12 @@
                                                               #:log-file (string-append
                                                                           (or (getenv
                                                                                "XDG_LOG_HOME")
+
                                                                               
                                                                               (format
                                                                                #f
                                                                                "~a/.local/var/log"
+
                                                                                
                                                                                (getenv
                                                                                 "HOME")))

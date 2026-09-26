@@ -5,6 +5,7 @@
   #:use-module (gnu home services)
   #:use-module (gnu home services shepherd)
   #:use-module (guix gexp)
+  #:use-module (guix build utils)
   #:use-module (config packages emacs)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages rust-apps)
@@ -14,12 +15,19 @@
 
 (define (home-emacs-profile-service config)
   (list emacs-pgtk imagemagick ripgrep))
+(define (emacs-config-files directory)
+  (map
+   (lambda (file)
+     (let ((relative
+            (string-drop file
+                         (+ 1 (string-length directory)))))
+       (list (string-append ".config/emacs/" relative)
+             (local-file file))))
+   (find-files directory)))
+
 (define (home-emacs-files-service config)
-  (format #t "CONFIG DIR = ~a~%"
-          (service-config-directory-file))
-  `(("TEST" ,(plain-file "test-emacs" "hello"))(".emacs.d" ,(service-config-directory-file))))
-;; (define (home-emacs-files-service config)
-;;   `((".emacs.d" ,(service-config-directory-file))))
+  (emacs-config-files
+   (local-file-file (service-config-directory-file))))
 
 (define (home-emacs-shepherd-service config)
   (list (shepherd-service (requirement '())
@@ -30,10 +38,12 @@
                                                               #:log-file (string-append
                                                                           (or (getenv
                                                                                "XDG_LOG_HOME")
+
                                                                               
                                                                               (format
                                                                                #f
                                                                                "~a/.local/var/log"
+
                                                                                
                                                                                (getenv
                                                                                 "HOME")))

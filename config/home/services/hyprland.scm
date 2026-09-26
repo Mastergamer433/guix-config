@@ -15,22 +15,23 @@
 
 (define (home-hyprland-files config)
   `((".config/hypr" ,(computed-file "hypr"
-				     (with-imported-modules
-				      '((guix build utils))
-                                     #~(begin
-					 (use-modules (guix build utils)) 
-                                         (mkdir #$output)
+                                    (with-imported-modules '((guix build utils))
+                                                           #~(begin
+                                                               (use-modules (guix
+                                                                             build
+                                                                             utils))
+                                                               (mkdir #$output)
 
-                                         (copy-recursively #$(file-append (home-hyprland-configuration-config
-                                                                           config)
-                                                              "/share/hypr")
-                                                           #$output)
+                                                               (copy-recursively #$
+                                                                (file-append (home-hyprland-configuration-config
+                                                                              config)
+                                                                 "/share/hypr")
+                                                                #$output)
 
-                                         (copy-file #$(service-config-file
-                                                       "hyprlock.conf")
-                                                    (string-append #$output
-								   "/hyprlock.conf"))))
-				     ))))
+                                                               (copy-file #$(service-config-file
+                                                                             "hyprlock.conf")
+                                                                          (string-append #$output
+                                                                           "/hyprlock.conf"))))))))
 
 (define (home-hyprland-packages config)
   (list hyprland hyprlock hypridle

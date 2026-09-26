@@ -1,0 +1,13 @@
+#!/bin/sh
+
+niri msg --json event-stream |
+  jq --unbuffered -c '
+    select(.WorkspacesChanged) |
+    .WorkspacesChanged.workspaces
+    | map({
+        id: .id,
+        idx: .idx,
+        name: (.name // (.idx | tostring)),
+        focused: .is_focused
+      })
+  '
