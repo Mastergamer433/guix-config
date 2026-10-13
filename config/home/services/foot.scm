@@ -11,9 +11,6 @@
   (list foot))
 
 (define (theme->foot-colors theme)
-  (define (color name)
-    (cdr (assoc name theme)))
-
   (string-join
    (list
     "[colors-dark]"

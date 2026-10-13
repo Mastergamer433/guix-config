@@ -4,7 +4,8 @@
   #:use-module (srfi srfi-1)
   #:export (service-config-file service-config-directory
                                 service-config-directory-file
-				theme->scss))
+				theme->scss
+				color))
 
 (define-syntax service-config-directory
   (lambda (stx)
@@ -39,3 +40,6 @@
            (string-prefix? "base" (car entry)))
          theme))
    "\n"))
+
+(define (color name)
+  (cdr (assoc name %theme)))

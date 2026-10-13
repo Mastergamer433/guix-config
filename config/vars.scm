@@ -12,5 +12,5 @@
 (define %keyboard-layout (keyboard-layout "se"))
 
 (define %theme
-  (call-with-input-file "files/themes/gruvbox-light-soft.scm"
+  (call-with-input-file (string-append %config-root "/files/themes/gruvbox-light-soft.scm")
     read))

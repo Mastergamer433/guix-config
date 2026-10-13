@@ -32,7 +32,7 @@
 (use-package move-text
   :bind (("M-p" . move-text-up)
 	 ("M-n" . move-text-down)))
-(defvar emacs-config-directory "~/config/files/.emacs.d")
+(defvar emacs-config-directory "~/config/files/emacs")
 
 (defun my/get-emacs-hosts ()
 ; regex matches . and .. but not anything containing . as to not remove dotfiles

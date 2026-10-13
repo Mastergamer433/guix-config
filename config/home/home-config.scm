@@ -45,12 +45,14 @@
   #:use-module (config home services nixpkgs)
   #:use-module (config home services eww)
   #:use-module (config home services hyprland)
-  #:use-module (config home services niri)
+  #:use-module (config home services niri-new)
+  #:use-module (config home services swaylock)
   #:use-module (config packages hyprland)
   #:use-module (config packages wine-tools)
   #:use-module (config packages flameshot)
   #:use-module (config home services xdg-desktop-portal-hyprland)
   #:use-module (config vars)
+  #:use-module (config utils)
   #:use-module (srfi srfi-1)
   #:export (my-home))
 
@@ -83,14 +85,14 @@
            (service home-xdg-desktop-portal-hyprland-service-type)
            (service home-nix-service-type
                     (home-nix-configuration (flake (string-append %config-root
-                                                    "/nix-flake"))
+								  "/nix-flake"))
                                             (profile
-                                             "$HOME/.local/state/nix/profiles/my-nix")))
+                                              "$HOME/.local/state/nix/profiles/my-nix")))
 
            (service home-bin-service-type
                     (home-bin-configuration (programs (list "activate-profile"
-                                                       "update-home"
-                                                       "update-system"))))
+							    "update-home"
+							    "update-system"))))
            (service home-sway-service-type
                     (sway-configuration (variables `((mod . "Mod4")
                                                      (term . "foot")
@@ -155,19 +157,169 @@
                                                        ($mod+Shift+e . "exec swaymsg exit")
                                                        ($mod+e . "layout toggle split")))))
 
+					;(service home-niri-service-type
+					;(home-niri-configuration
+					; (package niri)
+					; (extra-packages
+					;  (list foot
+					;        fuzzel))
+					; (data
+					;  `(
+					;    ("keyboard" . (("layout" . ,(keyboard-layout-name %keyboard-layout))))
+					;    ("layout" . (("gaps" . 16)
+					;     	    ("border" . (("width" . 4)))))
+					;    ("theme" . ,%theme)))))
+           (service home-swaylock-service-type
+		    (swaylock-configuration
+		     (package swaylock-effects)
+		     (options
+		      `(("timestr" . "%R")
+			("datestr" . "%a, %e of %B")
+			("fade-in" . "0.2")
+			("effect-blur" . "20x2")
+			("effect-scale" . "0.3")
+			("indicator-radius" . "240")
+			("indicator-thickness" . "20")
+			("key-hl-color" . ,(color "base08"))
+			("separator-color" . ,(string-append (color "base00") "00"))
+			("inside-color" . ,(string-append (color "base00") "99"))
+			("inside-clear-color" . ,(string-append (color "base0A") "00"))
+			("inside-caps-lock-color" . ,(string-append (color "base0C") "00"))
+			("inside-ver-color" . ,(string-append (color "base07") "00"))
+			("inside-wrong-color" . ,(string-append (color "base08") "00"))
+			("ring-color" . ,(string-append (color "base00") "d9"))
+			("ring-clear-color" . ,(string-append (color "base00") "d9"))
+			("ring-caps-lock-color" . ,(string-append (color "base00") "d9"))
+			("ring-ver-color" . ,(string-append (color "base00") "d9"))
+			("ring-wrong-color" . ,(string-append (color "base00") "d9"))
+			("line-color" . ,(string-append (color "base00") "00"))
+			("line-clear-color" . ,(string-append (color "base0A") "ff"))
+			("line-caps-lock-color" . ,(string-append (color "base0C") "ff"))
+			("line-ver-color" . ,(string-append (color "base07") "ff"))
+			("line-wrong-color" . ,(string-append (color "base08") "ff"))
+			("text-clear-color" . ,(string-append (color "base0A") "00"))
+			("text-ver-color" . ,(string-append (color "base07") "00"))
+			("text-wrong-color" . ,(string-append (color "base08") "00"))
+			("bs-hl-color" . ,(string-append (color "base08") "ff"))
+			("caps-lock-key-hl-color" . ,(string-append (color "base0A") "ff"))
+			("caps-lock-bs-hl-color" . ,(string-append (color "base08") "ff"))
+			("text-caps-lock-color" . ,(color "base0C"))))
+		     (flags
+		      '(ignore-empty-password
+			clock
+			screenshots
+			indicator
+			indicator-caps-lock
+			disable-caps-lock-text))))
+
+	   
 	   (service home-niri-service-type
-           (home-niri-configuration
-            (package niri)
-            (extra-packages
-             (list foot
-                   fuzzel))
-            (data
-             `(
-               ("keyboard" . (("layout" . ,(keyboard-layout-name %keyboard-layout))))
-               ("layout" . (("gaps" . 16)
-			    ("border" . (("width" . 4)))))
-	       ("theme" . ,%theme)))))
+		    (niri-configuration
+		     (prefer-no-csd #t)
+
+		     (startup-programs
+		      '(("flatpak" "run" "com.discordapp.Discord")
+			("librewolf")))
+
+		     (window-rules
+		      (list
+		       (niri-window-rule
+			(match '((app-id . "foot")))
+			(tiled-state #t))))
+
+		     (input
+		      (niri-input
+		       (keyboard-layout
+			(keyboard-layout-name %keyboard-layout))))
+
+		     (layout
+		      (niri-layout
+		       (gaps 8)
+		       (background-color (color "base00"))
+		       (border
+			(niri-border
+			 (width 6)
+			 (active-color (color "base0D"))
+			 (inactive-color (color "base03"))
+			 (urgent-color (color "base08"))))
+		       (focus-ring
+			(niri-focus-ring
+			 (off #t)))))
+
+		     (keybindings
+		      (append
+		       (list
+			(niri-bind
+			 (key "Mod+Return")
+			 (action (niri-spawn "foot")))
+			(niri-bind
+			 (key "Mod+Q")
+			 (action (niri-action 'close-window)))
+			(niri-bind
+			 (key "Mod+Shift+E")
+			 (action (niri-action 'quit)))
+			(niri-bind
+			 (key "Mod+Escape")
+			 (action (niri-action 'toggle-keyboard-shortcuts-inhibit)))
+			(niri-bind
+			 (key "Mod+T")
+			 (action (niri-spawn "swaylock"))))
+		       (append-map
+			(lambda (x)
+			  (let ((key (car x))
+				(direction (cdr x))
+				(horizontal? (member (car x) '("h" "l"))))
+			    (list
+			     (niri-bind
+			      (key (format #f "Mod+~a" key))
+			      (action
+			       (niri-action
+				(string->symbol
+				 (string-append
+				  (if horizontal? "focus-column-" "focus-window-")
+				  direction))))
+			      )
+			     (niri-bind
+			      (key (format #f "Mod+Shift+~a" key))
+			      (action
+			       (niri-action
+				(string->symbol
+				 (string-append
+				  (if horizontal? "move-column-" "move-window-")
+				  direction))))
+			      )
+			     (niri-bind
+			      (key (format #f "Mod+Ctrl+~a" key))
+			      (action
+			       (niri-action
+				(string->symbol
+				 (string-append "focus-monitor-" direction))))
+			      )
+			     (niri-bind
+			      (key (format #f "Mod+Ctrl+Shift+~a" key))
+			      (action
+			       (niri-action
+				(string->symbol
+				 (string-append "move-column-to-monitor-" direction))))
+			      ))))
+			'(("h" . "left")
+			  ("j" . "down")
+			  ("k" . "up")
+			  ("l" . "right")))
+		       
+		       (append-map
+			(lambda (n)
+			  (list
+			   (niri-bind
+			    (key (format #f "Mod+~a" n))
+			    (action (niri-action 'focus-workspace n)))
+			   (niri-bind
+			    (key (format #f "Mod+Ctrl+~a" n))
+			    (action (niri-action 'move-column-to-workspace n)))))
+			(iota 9 1))))))
+
            ;; (service home-cargo-service-type)
+
            
            (service home-eww-service-type)
            
@@ -182,25 +334,20 @@
            
            (service home-bash-service-type
                     (home-bash-configuration
-                     (variables `(("EDITOR" . "emacs -q -nw")
-                                  ("PATH" . "~/.bin/:$PATH")))
-                     (aliases `(("ls" . "eza")
-                                ("ssh" . "gpg-connect-agent updatestartuptty /bye >/dev/null && ssh")
-                                ("e" . "$EDITOR")))
-                     (bashrc `(,(plain-file "bashrc"
-                                 "eval \"$(direnv hook bash)\"
-export GPG_TTY=\"$(tty)\"
-unset SSH_AGENT_PID
-if [ \"${gnupg_SSH_AUTH_SOCK_by:-0}\" -ne $$ ]; then
-    export SSH_AUTH_SOCK=\"$(gpgconf --list-dirs agent-ssh-socket)\"
-fi
+                      (variables `(("EDITOR" . "emacs -q -nw")
+                                   ("PATH" . "~/.bin/:$PATH")))
+                      (aliases `(("ls" . "eza")
+                                 ;("ssh" . "gpg-connect-agent updatestartuptty /bye >/dev/null && ssh")
+                                 ("e" . "$EDITOR")))
+                      (bashrc `(,(plain-file "bashrc"
+					     "eval \"$(direnv hook bash)\"
 export XDG_DATA_DIRS=\"$HOME/.local/share/flatpak/exports/share/:$XDG_DATA_DIRS\"
 ")))))
            (service home-gpg-agent-service-type
                     (home-gpg-agent-configuration (pinentry-program (file-append
                                                                      pinentry-qt
                                                                      "/bin/pinentry-qt"))
-                                                  (ssh-support? #t)))
+                                                  (ssh-support? #f)))
 
            ;; (service home-dotfiles-service-type
            ;; (home-dotfiles-configuration
